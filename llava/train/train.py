@@ -684,7 +684,7 @@ class LazySupervisedDataset(Dataset):
     def modality_lengths(self):
         length_list = []
         for sample in self.list_data_dict:
-            cur_len = sum(len(conv['value'].split()) for conv in sample['conversations'])
+            cur_len = sum(len(str(conv['value']).split()) for conv in sample['conversations'])
             cur_len = cur_len if 'image' in sample else -cur_len
             length_list.append(cur_len)
         return length_list
@@ -816,7 +816,7 @@ def train(attn_implementation=None):
     if model_args.vision_tower is not None:
         if 'mpt' in model_args.model_name_or_path:
             config = transformers.AutoConfig.from_pretrained(model_args.model_name_or_path, trust_remote_code=True)
-            config.attn_config['attn_impl'] = training_args.mpt_attn_impl
+           config.attn_config['attn_impl'] = training_args.mpt_attn_impl
             model = LlavaMptForCausalLM.from_pretrained(
                 model_args.model_name_or_path,
                 config=config,
@@ -824,6 +824,7 @@ def train(attn_implementation=None):
                 **bnb_model_from_pretrained_args
             )
         else:
+            
             model = LlavaLlamaForCausalLM.from_pretrained(
                 model_args.model_name_or_path,
                 cache_dir=training_args.cache_dir,
